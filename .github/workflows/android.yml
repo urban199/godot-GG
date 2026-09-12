@@ -1,0 +1,24 @@
+name: Build Godot Android APK
+
+on:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.5.1
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download pinned Godot
+        run: |
+          curl --fail --location --output godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          chmod +x "Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+      - name: Export APK
+        run: mkdir -p build/android && ./"Godot_v${GODOT_VERSION}-stable_linux.x86_64" --headless --path . --export-debug Android build/android/NekoGodotAI.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neko-godot-android-${{ github.sha }}
+          path: build/android/NekoGodotAI.apk
