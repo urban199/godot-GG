@@ -59,7 +59,7 @@ func _unhandled_input(event: InputEvent) -> void:
         elif not event.pressed and event.index == look_touch_id:
             look_touch_id = -1
     if event is InputEventScreenDrag and event.index == look_touch_id:
-        var drag_delta := event.position - last_look_position
+        var drag_delta: Vector2 = event.position - last_look_position
         last_look_position = event.position
         rotate_y(-drag_delta.x * 0.006)
         pitch = clamp(pitch - drag_delta.y * 0.004, -0.9, 0.25)
@@ -124,7 +124,7 @@ func shoot() -> void:
     fired.emit()
     var query := PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position + -camera.global_transform.basis.z * 32.0)
     query.exclude = [self]
-    var hit := get_world_3d().direct_space_state.intersect_ray(query)
+    var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
     if hit and hit.collider.has_method("take_damage"): hit.collider.take_damage(damage)
 
 func reload_weapon() -> void:
