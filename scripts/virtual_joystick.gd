@@ -8,27 +8,40 @@ var knob_radius := 34.0
 
 func _ready() -> void:
     mouse_filter = Control.MOUSE_FILTER_STOP
+    add_to_group("mobile_joystick")
     queue_redraw()
 
-func _gui_input(event: InputEvent) -> void:
+func _process(_delta: float) -> void:
+    if not active or input_vector.length() < 0.12:
+        return
+    if input_vector.x < -0.12: Input.action_press("move_left", -input_vector.x)
+    if input_vector.x > 0.12: Input.action_press("move_right", input_vector.x)
+    if input_vector.y < -0.12: Input.action_press("move_forward", -input_vector.y)
+    if input_vector.y > 0.12: Input.action_press("move_backward", input_vector.y)
+
+func _input(event: InputEvent) -> void:
     if event is InputEventScreenTouch:
         if event.pressed:
+            if not get_global_rect().has_point(event.position):
+                return
             active = true
             pointer_id = event.index
-            _set_vector(event.position)
+            _set_vector(event.position - global_position)
         elif active and event.index == pointer_id:
             _release_vector()
     elif event is InputEventScreenDrag and active and event.index == pointer_id:
-        _set_vector(event.position)
+        _set_vector(event.position - global_position)
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
         if event.pressed:
+            if not get_global_rect().has_point(event.position):
+                return
             active = true
             pointer_id = -2
-            _set_vector(event.position)
+            _set_vector(event.position - global_position)
         elif active and pointer_id == -2:
             _release_vector()
     elif event is InputEventMouseMotion and active and pointer_id == -2:
-        _set_vector(event.position)
+        _set_vector(event.position - global_position)
 
 func _set_vector(position: Vector2) -> void:
     var center := size * 0.5

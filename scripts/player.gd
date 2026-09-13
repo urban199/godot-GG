@@ -22,6 +22,8 @@ var reload_animation := 0.0
 var model_home_position := Vector3.ZERO
 var look_touch_id := -1
 var last_look_position := Vector2.ZERO
+var mobile_move_vector := Vector2.ZERO
+var mobile_joystick: Node = null
 
 @onready var camera: Camera3D = $Camera3D
 @onready var muzzle: Marker3D = $Muzzle
@@ -35,6 +37,7 @@ func _ready() -> void:
     health = max_health
     weapon_home_position = weapon_view.position
     model_home_position = player_model.position
+    mobile_joystick = get_tree().get_first_node_in_group("mobile_joystick")
     if not DisplayServer.is_touchscreen_available():
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
     health_changed.emit(health)
@@ -72,7 +75,15 @@ func _physics_process(delta: float) -> void:
         flashlight_on = not flashlight_on
         flashlight.visible = flashlight_on
     if Input.is_action_just_pressed("fire"): shoot()
+    if not mobile_joystick:
+        mobile_joystick = get_tree().get_first_node_in_group("mobile_joystick")
     var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+    if mobile_joystick and mobile_joystick.input_vector.length() > 0.08:
+        input_vector = mobile_joystick.input_vector
+    if Input.is_physical_key_pressed(KEY_A): input_vector.x = -1.0
+    if Input.is_physical_key_pressed(KEY_D): input_vector.x = 1.0
+    if Input.is_physical_key_pressed(KEY_W): input_vector.y = -1.0
+    if Input.is_physical_key_pressed(KEY_S): input_vector.y = 1.0
     var direction := (transform.basis * Vector3(input_vector.x, 0.0, input_vector.y)).normalized()
     var speed := sprint_speed if Input.is_action_pressed("sprint") else walk_speed
     if direction:
