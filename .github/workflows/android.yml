@@ -32,12 +32,13 @@ jobs:
       - name: Install Android SDK packages
         shell: bash
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
+          yes | sdkmanager \
+          --sdk_root="${ANDROID_SDK_ROOT}" \
+          --licenses >/dev/null || true
           sdkmanager --install \
-            "platform-tools" \
+            --sdk_root="${ANDROID_SDK_ROOT}" \
             "platforms/${ANDROID_PLATFORM}" \
             "build-tools;${ANDROID_BUILD_TOOLS}" \
-            "cmdline-tools;latest" \
             "cmake;${ANDROID_CMAKE}" \
             "ndk;${ANDROID_NDK}"
 
