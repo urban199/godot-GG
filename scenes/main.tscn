@@ -1,10 +1,12 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
 [ext_resource type="Script" path="res://scripts/zombie.gd" id="3_zombie"]
 [ext_resource type="Script" path="res://scripts/pickup.gd" id="4_pickup"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="5_touch"]
+[ext_resource type="PackedScene" path="res://assets/characters/player/survivor.glb" id="6_player_model"]
+[ext_resource type="PackedScene" path="res://assets/characters/enemies/creature.glb" id="7_enemy_model"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -137,6 +139,8 @@ script = ExtResource("2_player")
 groups = ["player"]
 [node name="Mesh" type="MeshInstance3D" parent="Player"]
 mesh = SubResource("Player_mesh")
+visible = false
+[node name="PlayerModel" parent="Player" instance=ExtResource("6_player_model")]
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("Player_shape")
 [node name="Muzzle" type="Marker3D" parent="Player"]
@@ -158,6 +162,8 @@ position = Vector3(-7, 1, -5)
 script = ExtResource("3_zombie")
 [node name="Mesh" type="MeshInstance3D" parent="ZombieA"]
 mesh = SubResource("Zombie_mesh")
+visible = false
+[node name="EnemyModel" parent="ZombieA" instance=ExtResource("7_enemy_model")]
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ZombieA"]
 shape = SubResource("Zombie_shape")
 [node name="ZombieB" type="CharacterBody3D" parent="."]
@@ -165,6 +171,8 @@ position = Vector3(6, 1, -5)
 script = ExtResource("3_zombie")
 [node name="Mesh" type="MeshInstance3D" parent="ZombieB"]
 mesh = SubResource("Zombie_mesh")
+visible = false
+[node name="EnemyModel" parent="ZombieB" instance=ExtResource("7_enemy_model")]
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ZombieB"]
 shape = SubResource("Zombie_shape")
 [node name="ZombieC" type="CharacterBody3D" parent="."]
@@ -172,6 +180,8 @@ position = Vector3(8, 1, 5)
 script = ExtResource("3_zombie")
 [node name="Mesh" type="MeshInstance3D" parent="ZombieC"]
 mesh = SubResource("Zombie_mesh")
+visible = false
+[node name="EnemyModel" parent="ZombieC" instance=ExtResource("7_enemy_model")]
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ZombieC"]
 shape = SubResource("Zombie_shape")
 

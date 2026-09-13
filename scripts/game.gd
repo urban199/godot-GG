@@ -47,7 +47,7 @@ func _on_ammo_changed(current: int, reserve: int) -> void: ammo_label.text = "Am
 func _on_fired() -> void: message.text = ""
 func _build_city_district() -> void:
     var building_materials: Array[StandardMaterial3D] = []
-    for color in [Color(0.08, 0.09, 0.13), Color(0.12, 0.10, 0.16), Color(0.10, 0.13, 0.17), Color(0.16, 0.11, 0.13)]:
+    for color in [Color(0.16, 0.22, 0.32), Color(0.32, 0.18, 0.24), Color(0.16, 0.32, 0.30), Color(0.38, 0.25, 0.14), Color(0.24, 0.18, 0.38)]:
         var material := StandardMaterial3D.new()
         material.albedo_color = color
         material.roughness = 0.86
@@ -87,10 +87,11 @@ func _build_city_district() -> void:
 
 func _add_window_strip(parent: Node3D, size: Vector3, index: int) -> void:
     var window_material := StandardMaterial3D.new()
-    window_material.albedo_color = Color(0.28, 0.18, 0.08)
+    var window_colors := [Color(1.0, 0.27, 0.08), Color(0.10, 0.65, 1.0), Color(0.75, 0.20, 1.0), Color(1.0, 0.72, 0.12)]
+    window_material.albedo_color = window_colors[index % window_colors.size()]
     window_material.emission_enabled = true
-    window_material.emission = Color(0.42, 0.16, 0.04)
-    window_material.emission_energy_multiplier = 0.7
+    window_material.emission = window_colors[index % window_colors.size()]
+    window_material.emission_energy_multiplier = 1.4
 
     for row in range(2):
         var window := MeshInstance3D.new()
