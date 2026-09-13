@@ -3,6 +3,10 @@ extends CanvasLayer
 var held_actions: Dictionary = {}
 
 func _ready() -> void:
+    _style_round($MoveUp, Color(0.08, 0.22, 0.42, 0.88))
+    _style_round($MoveLeft, Color(0.08, 0.22, 0.42, 0.88))
+    _style_round($MoveDown, Color(0.08, 0.22, 0.42, 0.88))
+    _style_round($MoveRight, Color(0.08, 0.22, 0.42, 0.88))
     _style_round($Fire, Color(0.78, 0.12, 0.10, 0.9))
     _style_round($Reload, Color(0.12, 0.34, 0.68, 0.9))
     _style_round($Flashlight, Color(0.72, 0.42, 0.08, 0.9))

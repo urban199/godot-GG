@@ -312,41 +312,37 @@ horizontal_alignment = 1
 script = ExtResource("5_touch")
 
 [node name="MoveUp" type="Button" parent="TouchControls"]
-visible = false
 offset_left = 92.0
-offset_top = 488.0
-offset_right = 192.0
-offset_bottom = 548.0
+offset_top = 470.0
+offset_right = 172.0
+offset_bottom = 550.0
 theme_override_font_sizes/font_size = 28
 text = "^"
 tooltip_text = "Move forward"
 
 [node name="MoveLeft" type="Button" parent="TouchControls"]
-visible = false
-offset_left = 24.0
-offset_top = 548.0
-offset_right = 124.0
-offset_bottom = 608.0
+offset_left = 12.0
+offset_top = 550.0
+offset_right = 92.0
+offset_bottom = 630.0
 theme_override_font_sizes/font_size = 28
 text = "<"
 tooltip_text = "Move left"
 
 [node name="MoveDown" type="Button" parent="TouchControls"]
-visible = false
 offset_left = 92.0
-offset_top = 608.0
-offset_right = 192.0
-offset_bottom = 668.0
+offset_top = 630.0
+offset_right = 172.0
+offset_bottom = 710.0
 theme_override_font_sizes/font_size = 28
 text = "v"
 tooltip_text = "Move backward"
 
 [node name="MoveRight" type="Button" parent="TouchControls"]
-visible = false
-offset_left = 160.0
-offset_top = 548.0
-offset_right = 260.0
-offset_bottom = 608.0
+offset_left = 172.0
+offset_top = 550.0
+offset_right = 252.0
+offset_bottom = 630.0
 theme_override_font_sizes/font_size = 28
 text = ">"
 tooltip_text = "Move right"
@@ -379,6 +375,7 @@ text = "FIRE"
 tooltip_text = "Shoot"
 
 [node name="Joystick" type="Control" parent="TouchControls"]
+visible = false
 layout_mode = 0
 offset_left = 24.0
 offset_top = 476.0
