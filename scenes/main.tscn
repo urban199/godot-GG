@@ -183,33 +183,36 @@ visible = false
 [node name="PlayerModel" type="Node3D" parent="Player"]
 script = ExtResource("6_humanoid")
 role = "survivor"
-position = Vector3(-0.38, -0.28, 0.18)
+position = Vector3(0, -0.28, 0)
 scale = Vector3(0.9, 0.9, 0.9)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("Player_shape")
 [node name="Muzzle" type="Marker3D" parent="Player"]
 position = Vector3(0, 0.2, -0.7)
-[node name="Camera3D" type="Camera3D" parent="Player"]
-position = Vector3(1.05, 2.25, 4.75)
-rotation_degrees = Vector3(-10, 0, 0)
+[node name="CameraPivot" type="Node3D" parent="Player"]
+position = Vector3(0, 1.45, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot"]
+position = Vector3(1.15, 0.35, 4.2)
 current = true
-[node name="WeaponView" type="Node3D" parent="Player/Camera3D"]
+
+[node name="WeaponView" type="Node3D" parent="Player/CameraPivot/Camera3D"]
+visible = false
 position = Vector3(0.58, -0.43, -0.92)
 rotation_degrees = Vector3(-2, -3, 0)
-[node name="Slide" type="MeshInstance3D" parent="Player/Camera3D/WeaponView"]
+[node name="Slide" type="MeshInstance3D" parent="Player/CameraPivot/Camera3D/WeaponView"]
 position = Vector3(0, 0.08, 0)
 mesh = SubResource("Weapon_slide_mesh")
-[node name="Grip" type="MeshInstance3D" parent="Player/Camera3D/WeaponView"]
+[node name="Grip" type="MeshInstance3D" parent="Player/CameraPivot/Camera3D/WeaponView"]
 position = Vector3(0, -0.18, 0.13)
 rotation_degrees = Vector3(-10, 0, 0)
 mesh = SubResource("Weapon_grip_mesh")
-[node name="Barrel" type="MeshInstance3D" parent="Player/Camera3D/WeaponView"]
+[node name="Barrel" type="MeshInstance3D" parent="Player/CameraPivot/Camera3D/WeaponView"]
 position = Vector3(0, 0.08, -0.43)
 rotation_degrees = Vector3(90, 0, 0)
 mesh = SubResource("Weapon_barrel_mesh")
-[node name="Flashlight" type="SpotLight3D" parent="Player/Camera3D"]
+[node name="Flashlight" type="SpotLight3D" parent="Player/CameraPivot/Camera3D"]
 position = Vector3(0, 0, -0.3)
-rotation_degrees = Vector3(0, 180, 0)
 spot_range = 16.0
 spot_angle = 28.0
 light_energy = 7.0
@@ -364,6 +367,15 @@ offset_bottom = 550.0
 theme_override_font_sizes/font_size = 16
 text = "RELOAD"
 tooltip_text = "Reload weapon"
+
+[node name="Shoulder" type="Button" parent="TouchControls"]
+offset_left = 920.0
+offset_top = 574.0
+offset_right = 1016.0
+offset_bottom = 670.0
+theme_override_font_sizes/font_size = 15
+text = "SIDE"
+tooltip_text = "Swap camera shoulder"
 
 [node name="Fire" type="Button" parent="TouchControls"]
 offset_left = 1138.0

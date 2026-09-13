@@ -14,9 +14,11 @@ func _ready() -> void:
     _style_round($Fire, Color(0.78, 0.12, 0.10, 0.9))
     _style_round($Reload, Color(0.12, 0.34, 0.68, 0.9))
     _style_round($Flashlight, Color(0.72, 0.42, 0.08, 0.9))
+    _style_round($Shoulder, Color(0.34, 0.18, 0.62, 0.9))
     $Fire.pressed.connect(_one_shot.bind("fire"))
     $Reload.pressed.connect(_one_shot.bind("reload"))
     $Flashlight.pressed.connect(_one_shot.bind("flashlight"))
+    $Shoulder.pressed.connect(_one_shot.bind("shoulder_swap"))
 
 func _style_round(button: Button, color: Color) -> void:
     var normal := StyleBoxFlat.new()

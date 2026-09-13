@@ -9,11 +9,18 @@ signal fired
 @export var jump_velocity := 5.5
 @export var max_health := 100
 @export var damage := 35
+@export var camera_distance := 4.2
+@export var camera_height := 0.35
+@export var camera_shoulder_offset := 1.15
+@export var camera_collision_margin := 0.25
+@export var camera_smoothing := 12.0
 var health := 100
 var ammo := 6
 var reserve_ammo := 24
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var pitch := -0.18
+var camera_yaw := 0.0
+var shoulder_side := 1.0
 var can_shoot := true
 var flashlight_on := true
 var walk_time := 0.0
@@ -26,11 +33,12 @@ var mobile_move_vector := Vector2.ZERO
 var mobile_joystick = null
 var mobile_actions: Dictionary = {}
 
-@onready var camera: Camera3D = $Camera3D
+@onready var camera_pivot: Node3D = $CameraPivot
+@onready var camera: Camera3D = $CameraPivot/Camera3D
 @onready var muzzle: Marker3D = $Muzzle
-@onready var flashlight: SpotLight3D = $Camera3D/Flashlight
+@onready var flashlight: SpotLight3D = $CameraPivot/Camera3D/Flashlight
 @onready var player_model: Node3D = $PlayerModel
-@onready var weapon_view: Node3D = $Camera3D/WeaponView
+@onready var weapon_view: Node3D = $CameraPivot/Camera3D/WeaponView
 var weapon_home_position := Vector3.ZERO
 
 func _ready() -> void:
@@ -38,6 +46,9 @@ func _ready() -> void:
     health = max_health
     weapon_home_position = weapon_view.position
     model_home_position = player_model.position
+    camera_yaw = rotation.y
+    camera_pivot.rotation.x = pitch
+    camera.position = _get_camera_home_position()
     mobile_joystick = get_tree().get_first_node_in_group("mobile_joystick")
     if not DisplayServer.is_touchscreen_available():
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -49,9 +60,10 @@ func set_mobile_action(action: String, pressed: bool) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-        rotate_y(-event.relative.x * 0.0025)
-        pitch = clamp(pitch - event.relative.y * 0.002, -0.9, 0.25)
-        camera.rotation.x = pitch
+        camera_yaw -= event.relative.x * 0.0025
+        pitch = clamp(pitch - event.relative.y * 0.002, -0.75, 0.35)
+        rotation.y = camera_yaw
+        camera_pivot.rotation.x = pitch
     if event is InputEventScreenTouch:
         if event.pressed and event.position.x > get_viewport().get_visible_rect().size.x * 0.35:
             look_touch_id = event.index
@@ -59,11 +71,12 @@ func _unhandled_input(event: InputEvent) -> void:
         elif not event.pressed and event.index == look_touch_id:
             look_touch_id = -1
     if event is InputEventScreenDrag and event.index == look_touch_id:
-        var drag_delta := event.position - last_look_position
+        var drag_delta: Vector2 = event.position - last_look_position
         last_look_position = event.position
-        rotate_y(-drag_delta.x * 0.006)
-        pitch = clamp(pitch - drag_delta.y * 0.004, -0.9, 0.25)
-        camera.rotation.x = pitch
+        camera_yaw -= drag_delta.x * 0.006
+        pitch = clamp(pitch - drag_delta.y * 0.004, -0.75, 0.35)
+        rotation.y = camera_yaw
+        camera_pivot.rotation.x = pitch
     if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
 
@@ -79,6 +92,7 @@ func _physics_process(delta: float) -> void:
         flashlight_on = not flashlight_on
         flashlight.visible = flashlight_on
     if Input.is_action_just_pressed("fire"): shoot()
+    if Input.is_action_just_pressed("shoulder_swap"): swap_camera_shoulder()
     if not mobile_joystick:
         mobile_joystick = get_tree().get_first_node_in_group("mobile_joystick")
     var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
@@ -113,6 +127,26 @@ func _physics_process(delta: float) -> void:
     else:
         player_model.position.y = move_toward(player_model.position.y, model_home_position.y, delta * 0.18)
         player_model.rotation.z = move_toward(player_model.rotation.z, 0.0, delta * 0.15)
+    _update_camera_collision(delta)
+
+func _get_camera_home_position() -> Vector3:
+    return Vector3(camera_shoulder_offset * shoulder_side, camera_height, camera_distance)
+
+func swap_camera_shoulder() -> void:
+    shoulder_side *= -1.0
+
+func _update_camera_collision(delta: float) -> void:
+    var target_local := _get_camera_home_position()
+    var pivot_origin := camera_pivot.global_position
+    var target_global := camera_pivot.to_global(target_local)
+    var query := PhysicsRayQueryParameters3D.create(pivot_origin, target_global)
+    query.exclude = [self]
+    var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+    if hit:
+        target_global = hit.position + hit.normal * camera_collision_margin
+        target_local = camera_pivot.to_local(target_global)
+    var weight := 1.0 - exp(-camera_smoothing * delta)
+    camera.position = camera.position.lerp(target_local, weight)
 
 func shoot() -> void:
     if not can_shoot or ammo <= 0: return
@@ -124,7 +158,7 @@ func shoot() -> void:
     fired.emit()
     var query := PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position + -camera.global_transform.basis.z * 32.0)
     query.exclude = [self]
-    var hit := get_world_3d().direct_space_state.intersect_ray(query)
+    var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
     if hit and hit.collider.has_method("take_damage"): hit.collider.take_damage(damage)
 
 func reload_weapon() -> void:
