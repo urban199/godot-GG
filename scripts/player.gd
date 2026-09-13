@@ -23,7 +23,7 @@ var model_home_position := Vector3.ZERO
 var look_touch_id := -1
 var last_look_position := Vector2.ZERO
 var mobile_move_vector := Vector2.ZERO
-var mobile_joystick: Node = null
+var mobile_joystick = null
 
 @onready var camera: Camera3D = $Camera3D
 @onready var muzzle: Marker3D = $Muzzle
@@ -97,7 +97,7 @@ func _physics_process(delta: float) -> void:
     if direction.length() > 0.01 and global_position.distance_to(position_before_slide) < 0.001:
         global_position += direction * speed * delta
     var movement_amount := Vector2(velocity.x, velocity.z).length()
-    player_model.set_moving(movement_amount > 0.15)
+    player_model.call("set_moving", movement_amount > 0.15)
     if movement_amount > 0.15:
         walk_time += delta * 9.0
         player_model.position = model_home_position + Vector3(0, sin(walk_time) * 0.045, 0)
