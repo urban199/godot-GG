@@ -67,6 +67,7 @@ func _physics_process(delta: float) -> void:
         velocity.z = move_toward(velocity.z, 0.0, speed * delta * 6.0)
     move_and_slide()
     var movement_amount := Vector2(velocity.x, velocity.z).length()
+    player_model.set_moving(movement_amount > 0.15)
     if movement_amount > 0.15:
         walk_time += delta * 9.0
         player_model.position.y = sin(walk_time) * 0.045

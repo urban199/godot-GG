@@ -5,21 +5,20 @@
 [ext_resource type="Script" path="res://scripts/zombie.gd" id="3_zombie"]
 [ext_resource type="Script" path="res://scripts/pickup.gd" id="4_pickup"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="5_touch"]
-[ext_resource type="PackedScene" path="res://assets/characters/retro/Model/characterMedium.fbx" id="6_player_model"]
-[ext_resource type="PackedScene" path="res://assets/characters/retro/Model/characterMedium.fbx" id="7_enemy_model"]
+[ext_resource type="Script" path="res://scripts/humanoid_visual.gd" id="6_humanoid"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
 background_color = Color(0.004, 0.006, 0.012, 1)
 ambient_light_source = 3
 ambient_light_color = Color(0.12, 0.16, 0.25, 1)
-ambient_light_energy = 0.45
+ambient_light_energy = 0.78
 fog_enabled = true
 fog_light_color = Color(0.04, 0.06, 0.11, 1)
 fog_density = 0.018
 
 [sub_resource type="StandardMaterial3D" id="Floor_material"]
-albedo_color = Color(0.12, 0.1, 0.11, 1)
+albedo_color = Color(0.16, 0.18, 0.22, 1)
 roughness = 0.92
 [sub_resource type="BoxMesh" id="Floor_mesh"]
 size = Vector3(72, 0.2, 56)
@@ -112,13 +111,33 @@ environment = SubResource("Environment_main")
 [node name="MoonLight" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-55, -25, 0)
 light_color = Color(0.35, 0.45, 0.8, 1)
-light_energy = 0.7
+light_energy = 1.05
 shadow_enabled = true
 [node name="FlickerLight" type="OmniLight3D" parent="."]
 position = Vector3(0, 3, 0)
 omni_range = 14.0
 light_color = Color(0.45, 0.55, 1, 1)
 light_energy = 3.0
+[node name="RedCityLight" type="OmniLight3D" parent="."]
+position = Vector3(-22, 4.5, -16)
+omni_range = 20.0
+light_color = Color(1, 0.12, 0.08, 1)
+light_energy = 5.5
+[node name="CyanCityLight" type="OmniLight3D" parent="."]
+position = Vector3(22, 4.5, -16)
+omni_range = 20.0
+light_color = Color(0.05, 0.55, 1, 1)
+light_energy = 5.5
+[node name="AmberCityLight" type="OmniLight3D" parent="."]
+position = Vector3(0, 4.0, 20)
+omni_range = 22.0
+light_color = Color(1, 0.42, 0.08, 1)
+light_energy = 5.0
+[node name="PurpleCityLight" type="OmniLight3D" parent="."]
+position = Vector3(-26, 4.0, 10)
+omni_range = 18.0
+light_color = Color(0.62, 0.12, 1, 1)
+light_energy = 4.5
 
 [node name="FloorBody" type="StaticBody3D" parent="."]
 [node name="Floor" type="MeshInstance3D" parent="FloorBody"]
@@ -160,7 +179,9 @@ groups = ["player"]
 [node name="Mesh" type="MeshInstance3D" parent="Player"]
 mesh = SubResource("Player_mesh")
 visible = false
-[node name="PlayerModel" parent="Player" instance=ExtResource("6_player_model")]
+[node name="PlayerModel" type="Node3D" parent="Player"]
+script = ExtResource("6_humanoid")
+role = "survivor"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("Player_shape")
 [node name="Muzzle" type="Marker3D" parent="Player"]
@@ -197,7 +218,9 @@ script = ExtResource("3_zombie")
 [node name="Mesh" type="MeshInstance3D" parent="ZombieA"]
 mesh = SubResource("Zombie_mesh")
 visible = false
-[node name="EnemyModel" parent="ZombieA" instance=ExtResource("7_enemy_model")]
+[node name="EnemyModel" type="Node3D" parent="ZombieA"]
+script = ExtResource("6_humanoid")
+role = "zombie"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ZombieA"]
 shape = SubResource("Zombie_shape")
 [node name="ZombieB" type="CharacterBody3D" parent="."]
@@ -206,7 +229,9 @@ script = ExtResource("3_zombie")
 [node name="Mesh" type="MeshInstance3D" parent="ZombieB"]
 mesh = SubResource("Zombie_mesh")
 visible = false
-[node name="EnemyModel" parent="ZombieB" instance=ExtResource("7_enemy_model")]
+[node name="EnemyModel" type="Node3D" parent="ZombieB"]
+script = ExtResource("6_humanoid")
+role = "zombie"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ZombieB"]
 shape = SubResource("Zombie_shape")
 [node name="ZombieC" type="CharacterBody3D" parent="."]
@@ -215,7 +240,9 @@ script = ExtResource("3_zombie")
 [node name="Mesh" type="MeshInstance3D" parent="ZombieC"]
 mesh = SubResource("Zombie_mesh")
 visible = false
-[node name="EnemyModel" parent="ZombieC" instance=ExtResource("7_enemy_model")]
+[node name="EnemyModel" type="Node3D" parent="ZombieC"]
+script = ExtResource("6_humanoid")
+role = "zombie"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ZombieC"]
 shape = SubResource("Zombie_shape")
 

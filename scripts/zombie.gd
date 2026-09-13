@@ -21,6 +21,7 @@ func _physics_process(delta: float) -> void:
     offset.y = 0
     var distance := offset.length()
     if distance > 1.45:
+        enemy_model.set_moving(true)
         velocity = offset.normalized() * move_speed
         look_at(global_position + Vector3(offset.x, 0, offset.z), Vector3.UP)
         move_and_slide()
@@ -28,6 +29,7 @@ func _physics_process(delta: float) -> void:
         enemy_model.position.y = sin(limp_time) * 0.06
         enemy_model.rotation.z = sin(limp_time * 0.7) * 0.08
     else:
+        enemy_model.set_moving(false)
         enemy_model.position.y = move_toward(enemy_model.position.y, 0.0, delta * 0.2)
         enemy_model.rotation.z = move_toward(enemy_model.rotation.z, 0.0, delta * 0.2)
     elif attack_cooldown <= 0:
