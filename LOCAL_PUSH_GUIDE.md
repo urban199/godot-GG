@@ -5,8 +5,8 @@ Folder ini adalah salinan penuh repository game dan sudah memiliki workflow otom
 ## Push pertama dari PowerShell
 
 ```powershell
-cd "E:\DISCORD[IMG]RAW\PROYEK GAME WEB GH\game"
-git config --local --add safe.directory "E:/DISCORD[IMG]RAW/PROYEK GAME WEB GH/game"
+cd "xnxx\game"
+git config --local --add safe.directory "xnxx/game"
 git status
 git add .
 git commit -m "Add local game assets"
