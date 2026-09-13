@@ -92,7 +92,10 @@ func _physics_process(delta: float) -> void:
     else:
         velocity.x = move_toward(velocity.x, 0.0, speed * delta * 6.0)
         velocity.z = move_toward(velocity.z, 0.0, speed * delta * 6.0)
+    var position_before_slide := global_position
     move_and_slide()
+    if direction.length() > 0.01 and global_position.distance_to(position_before_slide) < 0.001:
+        global_position += direction * speed * delta
     var movement_amount := Vector2(velocity.x, velocity.z).length()
     player_model.set_moving(movement_amount > 0.15)
     if movement_amount > 0.15:

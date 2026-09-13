@@ -11,6 +11,7 @@ var right_leg: Node3D
 var torso: MeshInstance3D
 
 func _ready() -> void:
+    process_mode = Node.PROCESS_MODE_ALWAYS
     _build_humanoid()
 
 func set_moving(value: bool) -> void:
@@ -88,3 +89,4 @@ func _process(delta: float) -> void:
     left_arm.rotation.x = -0.95 + sin(animation_time + PI) * stride * 0.35
     right_arm.rotation.x = -0.95 + sin(animation_time) * stride * 0.35
     torso.position.y = 1.02 + sin(animation_time * 2.0) * (0.025 if moving else 0.012)
+    torso.rotation.z = sin(animation_time) * (0.035 if moving else 0.018)
