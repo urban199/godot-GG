@@ -79,7 +79,7 @@ func _build_city_district() -> void:
         if building_scene:
             var building_model := building_scene.instantiate()
             building_model.scale = Vector3(1.15, 1.15, 1.15)
-            building_model.position.y = -size.y * 0.5
+            building_model.position.y = -sizes[index].y * 0.5
             body.add_child(building_model)
         else:
             var fallback_mesh := MeshInstance3D.new()
