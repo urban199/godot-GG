@@ -16,14 +16,21 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var pitch := -0.18
 var can_shoot := true
 var flashlight_on := true
+var walk_time := 0.0
+var weapon_recoil := 0.0
+var reload_animation := 0.0
 
 @onready var camera: Camera3D = $Camera3D
 @onready var muzzle: Marker3D = $Muzzle
 @onready var flashlight: SpotLight3D = $Camera3D/Flashlight
+@onready var player_model: Node3D = $PlayerModel
+@onready var weapon_view: Node3D = $Camera3D/WeaponView
+var weapon_home_position := Vector3.ZERO
 
 func _ready() -> void:
     add_to_group("player")
     health = max_health
+    weapon_home_position = weapon_view.position
     if not DisplayServer.is_touchscreen_available():
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
     health_changed.emit(health)
@@ -38,6 +45,10 @@ func _unhandled_input(event: InputEvent) -> void:
         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
 
 func _physics_process(delta: float) -> void:
+    weapon_recoil = move_toward(weapon_recoil, 0.0, delta * 0.9)
+    reload_animation = move_toward(reload_animation, 0.0, delta * 2.4)
+    weapon_view.position = weapon_home_position + Vector3(0, reload_animation * 0.08, weapon_recoil)
+    weapon_view.rotation.x = -0.02 - reload_animation * 0.55
     if not is_on_floor(): velocity.y -= gravity * delta
     if Input.is_action_just_pressed("jump") and is_on_floor(): velocity.y = jump_velocity
     if Input.is_action_just_pressed("reload"): reload_weapon()
@@ -55,10 +66,19 @@ func _physics_process(delta: float) -> void:
         velocity.x = move_toward(velocity.x, 0.0, speed * delta * 6.0)
         velocity.z = move_toward(velocity.z, 0.0, speed * delta * 6.0)
     move_and_slide()
+    var movement_amount := Vector2(velocity.x, velocity.z).length()
+    if movement_amount > 0.15:
+        walk_time += delta * 9.0
+        player_model.position.y = sin(walk_time) * 0.045
+        player_model.rotation.z = sin(walk_time * 0.5) * 0.025
+    else:
+        player_model.position.y = move_toward(player_model.position.y, 0.0, delta * 0.18)
+        player_model.rotation.z = move_toward(player_model.rotation.z, 0.0, delta * 0.15)
 
 func shoot() -> void:
     if not can_shoot or ammo <= 0: return
     can_shoot = false
+    weapon_recoil = 0.13
     get_tree().create_timer(0.22).timeout.connect(func(): can_shoot = true)
     ammo -= 1
     ammo_changed.emit(ammo, reserve_ammo)
@@ -70,6 +90,7 @@ func shoot() -> void:
 
 func reload_weapon() -> void:
     if ammo >= 6 or reserve_ammo <= 0: return
+    reload_animation = 1.0
     var needed := 6 - ammo
     var loaded := min(needed, reserve_ammo)
     ammo += loaded

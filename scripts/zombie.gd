@@ -6,6 +6,8 @@ extends CharacterBody3D
 var health := 70
 var attack_cooldown := 0.0
 var target: Node3D
+var limp_time := 0.0
+@onready var enemy_model: Node3D = $EnemyModel
 
 func _ready() -> void:
     health = max_health
@@ -22,6 +24,12 @@ func _physics_process(delta: float) -> void:
         velocity = offset.normalized() * move_speed
         look_at(global_position + Vector3(offset.x, 0, offset.z), Vector3.UP)
         move_and_slide()
+        limp_time += delta * 6.0
+        enemy_model.position.y = sin(limp_time) * 0.06
+        enemy_model.rotation.z = sin(limp_time * 0.7) * 0.08
+    else:
+        enemy_model.position.y = move_toward(enemy_model.position.y, 0.0, delta * 0.2)
+        enemy_model.rotation.z = move_toward(enemy_model.rotation.z, 0.0, delta * 0.2)
     elif attack_cooldown <= 0:
         attack_cooldown = 1.1
         target.take_damage(attack_damage)

@@ -69,12 +69,21 @@ func _build_city_district() -> void:
         body.name = "CityBuilding_%02d" % index
         body.position = blocks[index]
 
-        var mesh_instance := MeshInstance3D.new()
-        var mesh := BoxMesh.new()
-        mesh.size = sizes[index]
-        mesh.material = building_materials[index % building_materials.size()]
-        mesh_instance.mesh = mesh
-        body.add_child(mesh_instance)
+        var building_names := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+        var building_path := "res://assets/environment/kenney_city_kit_suburban/Models/GLB format/building-type-%s.glb" % building_names[index % building_names.size()]
+        var building_scene := load(building_path) as PackedScene
+        if building_scene:
+            var building_model := building_scene.instantiate()
+            building_model.scale = Vector3(1.15, 1.15, 1.15)
+            building_model.position.y = -size.y * 0.5
+            body.add_child(building_model)
+        else:
+            var fallback_mesh := MeshInstance3D.new()
+            var fallback_box := BoxMesh.new()
+            fallback_box.size = sizes[index]
+            fallback_box.material = building_materials[index % building_materials.size()]
+            fallback_mesh.mesh = fallback_box
+            body.add_child(fallback_mesh)
 
         var collision := CollisionShape3D.new()
         var shape := BoxShape3D.new()
