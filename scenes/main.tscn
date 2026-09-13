@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
@@ -6,39 +6,40 @@
 [ext_resource type="Script" path="res://scripts/pickup.gd" id="4_pickup"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="5_touch"]
 [ext_resource type="Script" path="res://scripts/humanoid_visual.gd" id="6_humanoid"]
+[ext_resource type="Script" path="res://scripts/virtual_joystick.gd" id="7_joystick"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
-background_color = Color(0.004, 0.006, 0.012, 1)
+background_color = Color(0.025, 0.04, 0.08, 1)
 ambient_light_source = 3
-ambient_light_color = Color(0.12, 0.16, 0.25, 1)
-ambient_light_energy = 0.78
+ambient_light_color = Color(0.32, 0.38, 0.58, 1)
+ambient_light_energy = 1.2
 fog_enabled = true
-fog_light_color = Color(0.04, 0.06, 0.11, 1)
-fog_density = 0.018
+fog_light_color = Color(0.18, 0.22, 0.38, 1)
+fog_density = 0.004
 
 [sub_resource type="StandardMaterial3D" id="Floor_material"]
 albedo_color = Color(0.16, 0.18, 0.22, 1)
 roughness = 0.92
 [sub_resource type="BoxMesh" id="Floor_mesh"]
-size = Vector3(72, 0.2, 56)
+size = Vector3(120, 0.2, 90)
 material = SubResource("Floor_material")
 [sub_resource type="BoxShape3D" id="Floor_shape"]
-size = Vector3(72, 0.2, 56)
+size = Vector3(120, 0.2, 90)
 
 [sub_resource type="StandardMaterial3D" id="Wall_material"]
 albedo_color = Color(0.18, 0.17, 0.2, 1)
 roughness = 0.8
 [sub_resource type="BoxMesh" id="Wall_long_mesh"]
-size = Vector3(72, 3.2, 0.35)
+size = Vector3(120, 3.2, 0.35)
 material = SubResource("Wall_material")
 [sub_resource type="BoxMesh" id="Wall_side_mesh"]
-size = Vector3(0.35, 3.2, 56)
+size = Vector3(0.35, 3.2, 90)
 material = SubResource("Wall_material")
 [sub_resource type="BoxShape3D" id="Wall_long_shape"]
-size = Vector3(72, 3.2, 0.35)
+size = Vector3(120, 3.2, 0.35)
 [sub_resource type="BoxShape3D" id="Wall_side_shape"]
-size = Vector3(0.35, 3.2, 56)
+size = Vector3(0.35, 3.2, 90)
 
 [sub_resource type="StandardMaterial3D" id="Player_material"]
 albedo_color = Color(0.2, 0.5, 0.78, 1)
@@ -148,25 +149,25 @@ position = Vector3(0, -0.1, 0)
 shape = SubResource("Floor_shape")
 
 [node name="NorthWall" type="StaticBody3D" parent="."]
-position = Vector3(0, 1.6, -28)
+position = Vector3(0, 1.6, -45)
 [node name="Mesh" type="MeshInstance3D" parent="NorthWall"]
 mesh = SubResource("Wall_long_mesh")
 [node name="Collision" type="CollisionShape3D" parent="NorthWall"]
 shape = SubResource("Wall_long_shape")
 [node name="SouthWall" type="StaticBody3D" parent="."]
-position = Vector3(0, 1.6, 28)
+position = Vector3(0, 1.6, 45)
 [node name="Mesh" type="MeshInstance3D" parent="SouthWall"]
 mesh = SubResource("Wall_long_mesh")
 [node name="Collision" type="CollisionShape3D" parent="SouthWall"]
 shape = SubResource("Wall_long_shape")
 [node name="WestWall" type="StaticBody3D" parent="."]
-position = Vector3(-36, 1.6, 0)
+position = Vector3(-60, 1.6, 0)
 [node name="Mesh" type="MeshInstance3D" parent="WestWall"]
 mesh = SubResource("Wall_side_mesh")
 [node name="Collision" type="CollisionShape3D" parent="WestWall"]
 shape = SubResource("Wall_side_shape")
 [node name="EastWall" type="StaticBody3D" parent="."]
-position = Vector3(36, 1.6, 0)
+position = Vector3(60, 1.6, 0)
 [node name="Mesh" type="MeshInstance3D" parent="EastWall"]
 mesh = SubResource("Wall_side_mesh")
 [node name="Collision" type="CollisionShape3D" parent="EastWall"]
@@ -182,16 +183,18 @@ visible = false
 [node name="PlayerModel" type="Node3D" parent="Player"]
 script = ExtResource("6_humanoid")
 role = "survivor"
+position = Vector3(-0.38, -0.28, 0.18)
+scale = Vector3(0.9, 0.9, 0.9)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 shape = SubResource("Player_shape")
 [node name="Muzzle" type="Marker3D" parent="Player"]
 position = Vector3(0, 0.2, -0.7)
 [node name="Camera3D" type="Camera3D" parent="Player"]
-position = Vector3(0.85, 2.45, 5.2)
+position = Vector3(1.05, 2.25, 4.75)
 rotation_degrees = Vector3(-10, 0, 0)
 current = true
 [node name="WeaponView" type="Node3D" parent="Player/Camera3D"]
-position = Vector3(0.62, -0.48, -1.05)
+position = Vector3(0.58, -0.43, -0.92)
 rotation_degrees = Vector3(-2, -3, 0)
 [node name="Slide" type="MeshInstance3D" parent="Player/Camera3D/WeaponView"]
 position = Vector3(0, 0.08, 0)
@@ -309,6 +312,7 @@ horizontal_alignment = 1
 script = ExtResource("5_touch")
 
 [node name="MoveUp" type="Button" parent="TouchControls"]
+visible = false
 offset_left = 92.0
 offset_top = 488.0
 offset_right = 192.0
@@ -318,6 +322,7 @@ text = "^"
 tooltip_text = "Move forward"
 
 [node name="MoveLeft" type="Button" parent="TouchControls"]
+visible = false
 offset_left = 24.0
 offset_top = 548.0
 offset_right = 124.0
@@ -327,6 +332,7 @@ text = "<"
 tooltip_text = "Move left"
 
 [node name="MoveDown" type="Button" parent="TouchControls"]
+visible = false
 offset_left = 92.0
 offset_top = 608.0
 offset_right = 192.0
@@ -336,6 +342,7 @@ text = "v"
 tooltip_text = "Move backward"
 
 [node name="MoveRight" type="Button" parent="TouchControls"]
+visible = false
 offset_left = 160.0
 offset_top = 548.0
 offset_right = 260.0
@@ -345,28 +352,37 @@ text = ">"
 tooltip_text = "Move right"
 
 [node name="Flashlight" type="Button" parent="TouchControls"]
-offset_left = 982.0
-offset_top = 496.0
-offset_right = 1110.0
-offset_bottom = 552.0
+offset_left = 974.0
+offset_top = 492.0
+offset_right = 1070.0
+offset_bottom = 588.0
 theme_override_font_sizes/font_size = 16
 text = "LIGHT"
 tooltip_text = "Toggle flashlight"
 
 [node name="Reload" type="Button" parent="TouchControls"]
-offset_left = 1120.0
-offset_top = 496.0
-offset_right = 1248.0
-offset_bottom = 552.0
+offset_left = 1090.0
+offset_top = 492.0
+offset_right = 1186.0
+offset_bottom = 588.0
 theme_override_font_sizes/font_size = 16
 text = "RELOAD"
 tooltip_text = "Reload weapon"
 
 [node name="Fire" type="Button" parent="TouchControls"]
-offset_left = 1080.0
+offset_left = 1120.0
 offset_top = 570.0
-offset_right = 1252.0
-offset_bottom = 688.0
+offset_right = 1240.0
+offset_bottom = 690.0
 theme_override_font_sizes/font_size = 22
 text = "FIRE"
 tooltip_text = "Shoot"
+
+[node name="Joystick" type="Control" parent="TouchControls"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 476.0
+offset_right = 224.0
+offset_bottom = 676.0
+mouse_filter = 0
+script = ExtResource("7_joystick")

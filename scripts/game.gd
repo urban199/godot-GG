@@ -56,12 +56,16 @@ func _build_city_district() -> void:
     var blocks := [
         Vector3(-25, 3.5, -20), Vector3(-13, 4.5, -20), Vector3(13, 4.0, -20), Vector3(25, 3.0, -20),
         Vector3(-25, 3.0, 20), Vector3(-13, 4.0, 20), Vector3(13, 4.5, 20), Vector3(25, 3.5, 20),
-        Vector3(-31, 3.0, -9), Vector3(31, 4.0, -10), Vector3(-31, 4.5, 10), Vector3(31, 3.0, 11)
+        Vector3(-31, 3.0, -9), Vector3(31, 4.0, -10), Vector3(-31, 4.5, 10), Vector3(31, 3.0, 11),
+        Vector3(-48, 4.0, -30), Vector3(0, 3.5, -36), Vector3(48, 4.5, -30),
+        Vector3(-48, 3.5, 30), Vector3(0, 4.0, 36), Vector3(48, 3.0, 30)
     ]
     var sizes := [
         Vector3(9, 7, 7), Vector3(8, 9, 7), Vector3(8, 8, 7), Vector3(9, 6, 7),
         Vector3(9, 6, 7), Vector3(8, 8, 7), Vector3(8, 9, 7), Vector3(9, 7, 7),
-        Vector3(6, 6, 10), Vector3(6, 8, 10), Vector3(6, 9, 10), Vector3(6, 6, 10)
+        Vector3(6, 6, 10), Vector3(6, 8, 10), Vector3(6, 9, 10), Vector3(6, 6, 10),
+        Vector3(10, 8, 8), Vector3(12, 7, 8), Vector3(10, 9, 8),
+        Vector3(10, 7, 8), Vector3(12, 8, 8), Vector3(10, 6, 8)
     ]
 
     for index in blocks.size():

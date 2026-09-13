@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 @export var max_health := 70
-@export var move_speed := 1.25
+@export var move_speed := 2.1
 @export var attack_damage := 12
 var health := 70
 var attack_cooldown := 0.0
@@ -12,9 +12,10 @@ var limp_time := 0.0
 func _ready() -> void:
     health = max_health
     add_to_group("enemy")
+    target = get_tree().get_first_node_in_group("player")
 
 func _physics_process(delta: float) -> void:
-    if not target: target = get_tree().get_first_node_in_group("player")
+    if not is_instance_valid(target): target = get_tree().get_first_node_in_group("player")
     if not target: return
     attack_cooldown = max(attack_cooldown - delta, 0.0)
     var offset := target.global_position - global_position
@@ -32,9 +33,10 @@ func _physics_process(delta: float) -> void:
         enemy_model.set_moving(false)
         enemy_model.position.y = move_toward(enemy_model.position.y, 0.0, delta * 0.2)
         enemy_model.rotation.z = move_toward(enemy_model.rotation.z, 0.0, delta * 0.2)
-    elif attack_cooldown <= 0:
-        attack_cooldown = 1.1
-        target.take_damage(attack_damage)
+        velocity = Vector3.ZERO
+        if attack_cooldown <= 0.0:
+            attack_cooldown = 1.1
+            target.take_damage(attack_damage)
 
 func take_damage(amount: int) -> void:
     health -= amount

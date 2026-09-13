@@ -19,6 +19,9 @@ var flashlight_on := true
 var walk_time := 0.0
 var weapon_recoil := 0.0
 var reload_animation := 0.0
+var model_home_position := Vector3.ZERO
+var look_touch_id := -1
+var last_look_position := Vector2.ZERO
 
 @onready var camera: Camera3D = $Camera3D
 @onready var muzzle: Marker3D = $Muzzle
@@ -31,6 +34,7 @@ func _ready() -> void:
     add_to_group("player")
     health = max_health
     weapon_home_position = weapon_view.position
+    model_home_position = player_model.position
     if not DisplayServer.is_touchscreen_available():
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
     health_changed.emit(health)
@@ -40,6 +44,18 @@ func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
         rotate_y(-event.relative.x * 0.0025)
         pitch = clamp(pitch - event.relative.y * 0.002, -0.9, 0.25)
+        camera.rotation.x = pitch
+    if event is InputEventScreenTouch:
+        if event.pressed and event.position.x > get_viewport().get_visible_rect().size.x * 0.35:
+            look_touch_id = event.index
+            last_look_position = event.position
+        elif not event.pressed and event.index == look_touch_id:
+            look_touch_id = -1
+    if event is InputEventScreenDrag and event.index == look_touch_id:
+        var drag_delta := event.position - last_look_position
+        last_look_position = event.position
+        rotate_y(-drag_delta.x * 0.006)
+        pitch = clamp(pitch - drag_delta.y * 0.004, -0.9, 0.25)
         camera.rotation.x = pitch
     if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED else Input.MOUSE_MODE_CAPTURED
@@ -70,10 +86,10 @@ func _physics_process(delta: float) -> void:
     player_model.set_moving(movement_amount > 0.15)
     if movement_amount > 0.15:
         walk_time += delta * 9.0
-        player_model.position.y = sin(walk_time) * 0.045
+        player_model.position = model_home_position + Vector3(0, sin(walk_time) * 0.045, 0)
         player_model.rotation.z = sin(walk_time * 0.5) * 0.025
     else:
-        player_model.position.y = move_toward(player_model.position.y, 0.0, delta * 0.18)
+        player_model.position.y = move_toward(player_model.position.y, model_home_position.y, delta * 0.18)
         player_model.rotation.z = move_toward(player_model.rotation.z, 0.0, delta * 0.15)
 
 func shoot() -> void:
