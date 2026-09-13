@@ -9,10 +9,8 @@ signal fired
 @export var jump_velocity := 5.5
 @export var max_health := 100
 @export var damage := 35
-@export var camera_distance := 4.2
-@export var camera_height := 0.35
-@export var camera_shoulder_offset := 1.15
-@export var camera_collision_margin := 0.25
+@export var camera_side_offset := 0.22
+@export var camera_collision_margin := 0.08
 @export var camera_smoothing := 12.0
 var health := 100
 var ammo := 6
@@ -130,10 +128,11 @@ func _physics_process(delta: float) -> void:
     _update_camera_collision(delta)
 
 func _get_camera_home_position() -> Vector3:
-    return Vector3(camera_shoulder_offset * shoulder_side, camera_height, camera_distance)
+    return Vector3(camera_side_offset * shoulder_side, 0.0, 0.0)
 
 func swap_camera_shoulder() -> void:
     shoulder_side *= -1.0
+    weapon_home_position.x = abs(weapon_home_position.x) * shoulder_side
 
 func _update_camera_collision(delta: float) -> void:
     var target_local := _get_camera_home_position()
