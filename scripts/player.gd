@@ -24,6 +24,7 @@ var look_touch_id := -1
 var last_look_position := Vector2.ZERO
 var mobile_move_vector := Vector2.ZERO
 var mobile_joystick = null
+var mobile_actions: Dictionary = {}
 
 @onready var camera: Camera3D = $Camera3D
 @onready var muzzle: Marker3D = $Muzzle
@@ -42,6 +43,9 @@ func _ready() -> void:
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
     health_changed.emit(health)
     ammo_changed.emit(ammo, reserve_ammo)
+
+func set_mobile_action(action: String, pressed: bool) -> void:
+    mobile_actions[action] = pressed
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -78,6 +82,10 @@ func _physics_process(delta: float) -> void:
     if not mobile_joystick:
         mobile_joystick = get_tree().get_first_node_in_group("mobile_joystick")
     var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+    if mobile_actions.get("move_left", false): input_vector.x = -1.0
+    if mobile_actions.get("move_right", false): input_vector.x = 1.0
+    if mobile_actions.get("move_forward", false): input_vector.y = -1.0
+    if mobile_actions.get("move_backward", false): input_vector.y = 1.0
     if mobile_joystick and mobile_joystick.input_vector.length() > 0.08:
         input_vector = mobile_joystick.input_vector
     if Input.is_physical_key_pressed(KEY_A): input_vector.x = -1.0

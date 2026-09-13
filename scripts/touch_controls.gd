@@ -3,6 +3,10 @@ extends CanvasLayer
 var held_actions: Dictionary = {}
 
 func _ready() -> void:
+    _bind_hold("MoveUp", "move_forward")
+    _bind_hold("MoveLeft", "move_left")
+    _bind_hold("MoveDown", "move_backward")
+    _bind_hold("MoveRight", "move_right")
     _style_round($MoveUp, Color(0.08, 0.22, 0.42, 0.88))
     _style_round($MoveLeft, Color(0.08, 0.22, 0.42, 0.88))
     _style_round($MoveDown, Color(0.08, 0.22, 0.42, 0.88))
@@ -10,10 +14,6 @@ func _ready() -> void:
     _style_round($Fire, Color(0.78, 0.12, 0.10, 0.9))
     _style_round($Reload, Color(0.12, 0.34, 0.68, 0.9))
     _style_round($Flashlight, Color(0.72, 0.42, 0.08, 0.9))
-    _bind_hold("MoveUp", "move_forward")
-    _bind_hold("MoveLeft", "move_left")
-    _bind_hold("MoveDown", "move_backward")
-    _bind_hold("MoveRight", "move_right")
     $Fire.pressed.connect(_one_shot.bind("fire"))
     $Reload.pressed.connect(_one_shot.bind("reload"))
     $Flashlight.pressed.connect(_one_shot.bind("flashlight"))
@@ -42,10 +42,14 @@ func _bind_hold(button_name: String, action: String) -> void:
 func _press(action: String) -> void:
     held_actions[action] = true
     Input.action_press(action)
+    var player := get_tree().get_first_node_in_group("player")
+    if player: player.call("set_mobile_action", action, true)
 
 func _release(action: String) -> void:
     held_actions.erase(action)
     Input.action_release(action)
+    var player := get_tree().get_first_node_in_group("player")
+    if player: player.call("set_mobile_action", action, false)
 
 func _process(_delta: float) -> void:
     for action in held_actions:
