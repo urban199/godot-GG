@@ -8,7 +8,11 @@ permissions:
 
 env:
   GODOT_VERSION: 4.5.1
+<<<<<<< HEAD
   ANDROID_BUILD_TOOLS: 32.0.0
+=======
+  ANDROID_BUILD_TOOLS: 35.0.0
+>>>>>>> 3d5f4ea5428ac8038ba0e1019a4e3f81c97fc5e3
   ANDROID_PLATFORM: android-32
   ANDROID_NDK: 28.1.13356709
   ANDROID_CMAKE: 3.10.2.4988404
@@ -18,10 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Java 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
@@ -32,13 +36,21 @@ jobs:
       - name: Install Android SDK packages
         shell: bash
         run: |
+<<<<<<< HEAD
           SDK_PATH="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
           yes | sdkmanager --sdk_root="$SDK_PATH" --licenses >/dev/null || true
           sdkmanager --sdk_root="$SDK_PATH" --install \
             "platform-tools" \
             "platforms;${ANDROID_PLATFORM}" \
+=======
+          yes | sdkmanager \
+          --sdk_root="${ANDROID_SDK_ROOT}" \
+          --licenses >/dev/null || true
+          sdkmanager --install \
+            --sdk_root="${ANDROID_SDK_ROOT}" \
+            "platforms/${ANDROID_PLATFORM}" \
+>>>>>>> 3d5f4ea5428ac8038ba0e1019a4e3f81c97fc5e3
             "build-tools;${ANDROID_BUILD_TOOLS}" \
-            "cmdline-tools;latest" \
             "cmake;${ANDROID_CMAKE}" \
             "ndk;${ANDROID_NDK}"
           yes | sdkmanager --sdk_root="$SDK_PATH" --licenses >/dev/null || true
