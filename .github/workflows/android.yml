@@ -8,18 +8,15 @@ permissions:
 
 env:
   GODOT_VERSION: 4.5.1
-<<<<<<< HEAD
-  ANDROID_BUILD_TOOLS: 32.0.0
-=======
-  ANDROID_BUILD_TOOLS: 35.0.0
->>>>>>> 3d5f4ea5428ac8038ba0e1019a4e3f81c97fc5e3
-  ANDROID_PLATFORM: android-32
+  ANDROID_BUILD_TOOLS: 34.0.0
+  ANDROID_PLATFORM: android-34
   ANDROID_NDK: 28.1.13356709
   ANDROID_CMAKE: 3.10.2.4988404
 
 jobs:
   android:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -32,45 +29,74 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
+        with:
+          packages: ''
+
+      - name: Show Android SDK environment
+        shell: bash
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "JAVA_HOME=$JAVA_HOME"
+          which sdkmanager
+          sdkmanager --version
+
+      - name: Accept Android SDK licenses
+        shell: bash
+        run: |
+          yes | sdkmanager \
+            --sdk_root="${ANDROID_SDK_ROOT}" \
+            --licenses >/dev/null || true
 
       - name: Install Android SDK packages
         shell: bash
         run: |
-<<<<<<< HEAD
-          SDK_PATH="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
-          yes | sdkmanager --sdk_root="$SDK_PATH" --licenses >/dev/null || true
-          sdkmanager --sdk_root="$SDK_PATH" --install \
-            "platform-tools" \
-            "platforms;${ANDROID_PLATFORM}" \
-=======
-          yes | sdkmanager \
-          --sdk_root="${ANDROID_SDK_ROOT}" \
-          --licenses >/dev/null || true
-          sdkmanager --install \
+          sdkmanager \
             --sdk_root="${ANDROID_SDK_ROOT}" \
+            "platform-tools" \
             "platforms/${ANDROID_PLATFORM}" \
->>>>>>> 3d5f4ea5428ac8038ba0e1019a4e3f81c97fc5e3
             "build-tools;${ANDROID_BUILD_TOOLS}" \
             "cmake;${ANDROID_CMAKE}" \
             "ndk;${ANDROID_NDK}"
-          yes | sdkmanager --sdk_root="$SDK_PATH" --licenses >/dev/null || true
-          echo "ANDROID_HOME=$SDK_PATH" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$SDK_PATH" >> "$GITHUB_ENV"
-          echo "ANDROID_NDK_HOME=$SDK_PATH/ndk/${ANDROID_NDK}" >> "$GITHUB_ENV"
+
+      - name: Verify Android SDK
+        shell: bash
+        run: |
+          echo "=== SDK ==="
+          ls -la "${ANDROID_SDK_ROOT}"
+
+          echo "=== Platform ==="
+          ls -la "${ANDROID_SDK_ROOT}/platforms/${ANDROID_PLATFORM}"
+
+          echo "=== Build Tools ==="
+          ls -la "${ANDROID_SDK_ROOT}/build-tools/${ANDROID_BUILD_TOOLS}"
+
+          echo "=== NDK ==="
+          ls -la "${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK}"
+
+          echo "=== CMake ==="
+          ls -la "${ANDROID_SDK_ROOT}/cmake/${ANDROID_CMAKE}"
 
       - name: Download Godot editor and export templates
         shell: bash
         run: |
           curl --fail --location --output godot.zip \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+
           unzip -q godot.zip
+
           chmod +x "Godot_v${GODOT_VERSION}-stable_linux.x86_64"
 
           curl --fail --location --output export_templates.tpz \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+
           mkdir -p godot-templates
+
           unzip -q export_templates.tpz -d godot-templates
-          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+
+          mkdir -p \
+            "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+
           cp godot-templates/templates/* \
             "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
 
@@ -78,24 +104,26 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$HOME/.config/godot"
-          SDK_PATH="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+
           cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
           [gd_resource type="EditorSettings" format=3]
 
           [resource]
           export/android/java_sdk_path = "${JAVA_HOME}"
-          export/android/android_sdk_path = "${SDK_PATH}"
-          export/android/android_ndk_path = "${SDK_PATH}/ndk/${ANDROID_NDK}"
+          export/android/android_sdk_path = "${ANDROID_SDK_ROOT}"
           EOF
 
       - name: Export debug APK
         shell: bash
         run: |
           mkdir -p build/android
-          ./'Godot_v${GODOT_VERSION}-stable_linux.x86_64' \
+
+          ./Godot_v${GODOT_VERSION}-stable_linux.x86_64 \
             --headless \
             --path . \
-            --export-debug 'Android' build/android/NekoNightfall-debug.apk
+            --export-debug \
+            "Android" \
+            build/android/NekoNightfall-debug.apk
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
